@@ -1,4 +1,4 @@
-package outputport
+package output_port
 
 import (
 	"chat_server/domain/entity"
