@@ -6,7 +6,7 @@ info:
 servers:
   - url: "https://api.example.com"
 paths:
-  /api/v1/users/register:
+  /api/v1/register:
     post:
       summary: "新規ユーザー登録"
       description: "ユーザー登録を行い、正常登録時にはJWTを発行します。"
@@ -39,19 +39,14 @@ paths:
               schema:
                 type: object
                 properties:
-                  user:
-                    type: object
-                    properties:
-                      userid:
-                        type: string
-                        description: "ユーザーID"
-                      username:
-                        type: string
-                      email:
-                        type: string
-                  token:
+                  userid:
                     type: string
-                    description: "JWTトークン"
+                    description: "ユーザーID"
+                  username:
+                    type: string
+                  email:
+                    type: string
+
         '400':
           description: "Bad Request - 入力内容に不備があります。"
         '409':
