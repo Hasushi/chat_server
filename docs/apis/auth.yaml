@@ -1,0 +1,259 @@
+openapi: "3.0.0"
+info:
+  title: "User Authentication API"
+  version: "1.0.0"
+  description: "GoでJWTを用いたユーザ認証機能を実装するためのAPI仕様書です。"
+servers:
+  - url: "https://api.example.com"
+paths:
+  /api/v1/users/register:
+    post:
+      summary: "新規ユーザー登録"
+      description: "ユーザー登録を行い、正常登録時にはJWTを発行します。"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - username
+                - email
+                - password
+              properties:
+                username:
+                  type: string
+                  description: "ユーザー名"
+                email:
+                  type: string
+                  format: email
+                  description: "メールアドレス"
+                password:
+                  type: string
+                  description: "パスワード"
+      responses:
+        '200':
+          description: "ユーザー登録成功。ユーザー情報とJWTが返されます。"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  user:
+                    type: object
+                    properties:
+                      userid:
+                        type: string
+                        description: "ユーザーID"
+                      username:
+                        type: string
+                      email:
+                        type: string
+                  token:
+                    type: string
+                    description: "JWTトークン"
+        '400':
+          description: "Bad Request - 入力内容に不備があります。"
+        '409':
+          description: "Conflict - 既に同じメールアドレスが登録されています。"
+          
+  /api/v1/users/login:
+    post:
+      summary: "ユーザーログイン"
+      description: "メールアドレスとパスワードで認証し、JWTを発行します。"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - email
+                - password
+              properties:
+                email:
+                  type: string
+                  format: email
+                  description: "登録済みのメールアドレス"
+                password:
+                  type: string
+                  description: "パスワード"
+      responses:
+        '200':
+          description: "ログイン成功。JWTトークンと有効期限を返します。"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  token:
+                    type: string
+                  expires_at:
+                    type: integer
+                    description: "トークンの期限(UNIX時刻)"
+        '401':
+          description: "Unauthorized - 認証失敗"
+          
+  /api/v1/users/me:
+    get:
+      summary: "ユーザープロフィール取得"
+      description: "現在認証中のユーザー情報を取得します。"
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: "ユーザープロフィール"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  userid:
+                    type: string
+                  username:
+                    type: string
+                  email:
+                    type: string
+                  created_at:
+                    type: string
+                    format: date-time
+        '401':
+          description: "Unauthorized - JWTが無効または期限切れ"
+    put:
+      summary: "ユーザープロフィール更新"
+      description: "認証済みユーザーの情報を更新します。"
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                username:
+                  type: string
+                email:
+                  type: string
+                  format: email
+                password:
+                  type: string
+                  description: "パスワード更新の場合のみ"
+      responses:
+        '200':
+          description: "ユーザープロフィール更新成功"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  id:
+                    type: string
+                  username:
+                    type: string
+                  email:
+                    type: string
+                  updated_at:
+                    type: string
+                    format: date-time
+        '400':
+          description: "Bad Request - 入力内容に不備がある場合"
+        '401':
+          description: "Unauthorized - 認証情報が無効"
+    patch:
+      summary: "ユーザープロフィール部分更新"
+      description: "認証済みユーザーの情報を部分的に更新します。"
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                username:
+                  type: string
+                email:
+                  type: string
+                  format: email
+                password:
+                  type: string
+      responses:
+        '200':
+          description: "ユーザープロフィール更新成功"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  userid:
+                    type: string
+                  username:
+                    type: string
+                  email:
+                    type: string
+                  updated_at:
+                    type: string
+                    format: date-time
+        '400':
+          description: "Bad Request - 入力内容に不備がある場合"
+        '401':
+          description: "Unauthorized - 認証情報が無効"
+    delete:
+      summary: "ユーザー削除"
+      description: "認証済みユーザーのアカウントを削除します。"
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: "ユーザー削除成功"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    description: "削除完了メッセージ"
+        '401':
+          description: "Unauthorized - 認証情報が無効"
+          
+  /api/v1/users/refresh:
+    post:
+      summary: "JWTトークンリフレッシュ"
+      description: "リフレッシュトークンを使用して新しいアクセストークンを発行します。"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - refresh_token
+              properties:
+                refresh_token:
+                  type: string
+                  description: "リフレッシュトークン"
+      responses:
+        '200':
+          description: "トークンリフレッシュ成功"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  token:
+                    type: string
+                  expires_at:
+                    type: integer
+                    description: "新しいトークンの有効期限(UNIX時刻)"
+        '401':
+          description: "Unauthorized - リフレッシュトークンが無効または期限切れ"
+          
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
