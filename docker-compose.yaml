@@ -3,14 +3,15 @@ version: '3.8'
 services:
   db:
     image: postgres:latest
+    container_name: postgres
     environment:
-      POSTGRES_USER: user
-      POSTGRES_PASSWORD: password
-      POSTGRES_DB: chat_db
+      POSTGRES_USER: docker
+      POSTGRES_PASSWORD: pospassword
+      POSTGRES_DB: posdb
     ports:
       - "5432:5432"
     volumes:
-      - db_data:/var/lib/postgresql/data
+      - postgres_data:/var/lib/postgresql/data
 
   app:
     image: golang:latest
@@ -24,4 +25,4 @@ services:
       - db
 
 volumes:
-  db_data:
+  postgres_data:
