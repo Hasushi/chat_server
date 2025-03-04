@@ -8,16 +8,19 @@ import (
 
 type UserUsecase struct {
 	auth output_port.UserAuth
+	user output_port.User
 }
 
 type NewUserUsecaseArgs struct {
 	Auth output_port.UserAuth
+	User output_port.User
 }
 
 func NewUserUsecase(args NewUserUsecaseArgs) input_port.IUserUsecase {
 	// TODO なんでここでポインタを返しているのかを理解する
 	return &UserUsecase{
 		auth: args.Auth,
+		user: args.User,
 	}
 }
 

@@ -1,28 +1,54 @@
 package main
 
 import (
+	authentication "chat_server/adapter/Authentication"
+	"chat_server/adapter/database"
+	"chat_server/router"
+	"chat_server/usecase/interactor"
 	"fmt"
 	"log"
 	"net/http"
 )
 
 	func main() {
-	    fmt.Println("Chat Server Started")
+		db, err := database.NewPostgresDB()
+		if err != nil {
+			log.Fatal(err)
+		}
+		defer func(){
+			postgres, err := db.DB()
+			if err != nil {
+				log.Fatal(err)
+			}
+			
+			err = postgres.Close()
+			if err != nil {
+				log.Fatal(err)
+			}
+		}()
 
-	    // Define HTTP route for the root endpoint
-	    http.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
-	        fmt.Fprintf(w, "Welcome to the Chat Server")
-	    })
+		err = database.Migrate(db)
+		if err != nil {
+			log.Fatal(err)
+		}
 
-	    // TODO: Add websocket handler for chat functionality
-	    // http.HandleFunc("/ws", handleConnections)
+		authRepo := authentication.NewUserAuth()
+		userRepo := database.NewUserRepository(db)
 
-	    // Start the server
-	    log.Println("Server starting on :8080")
-	    if err := http.ListenAndServe(":8080", nil); err != nil {
-	        log.Fatal("Server error:", err)
-	    }
+		userUC := interactor.NewUserUsecase(interactor.NewUserUsecaseArgs{
+			Auth: authRepo,
+			User: userRepo,
+		})
+		s := router.NewServer(userUC)
+		defer s.Close()
 
+		server := &http.Server{
+			Addr:    ":8080",
+			Handler: s.Handler,
+		}
+		if err := server.ListenAndServe(); err != nil {
+			fmt.Println(err)
+		}
 		
 	}
 
