@@ -11,7 +11,7 @@ import (
 
 func NewServer(
 	userUC input_port.IUserUsecase,
-) *echo.Echo {
+) *http.Server {
 	e := echo.New()
 
 	e.Use(middleware.CORSWithConfig(middleware.CORSConfig{
@@ -24,5 +24,5 @@ func NewServer(
 	api := e.Group("/api/v1")
 	api.POST("/register", userHandler.CreateUser)
 
-	return e
+	return e.Server
 }
