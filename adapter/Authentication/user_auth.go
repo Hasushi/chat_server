@@ -11,3 +11,11 @@ func NewUserAuth() output_port.UserAuth {
 func (u *UserAuth) Authenticate(token string) (string, error) {
 	return "", nil
 }
+
+func (u *UserAuth) HashPassword(password string) (string, error) {
+	hp, err := HashBcryptPassword(password)
+	if err != nil {
+		return "", err
+	}
+	return hp, nil
+}
