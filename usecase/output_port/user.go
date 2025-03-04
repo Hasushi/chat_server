@@ -15,9 +15,17 @@ var (
 
 type UserAuth interface {
 	Authenticate(token string) (string, error)
+	HashPassword(password string) (string, error)
+}
+
+type CreateUserArgs struct {
+	UserID string
+	UserName string
+	Email string
+	HashedPassword string
 }
 
 type User interface {
-	Create() error
+	Create(args CreateUserArgs) error
 	FindByID(userID string) (entity.User, error)
 }

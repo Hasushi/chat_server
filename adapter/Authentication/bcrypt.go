@@ -14,7 +14,7 @@ var (
 	ErrUnexpected = errors.New("unexpected error")
 )
 
-func bcriptHash(text string) (string, error) {
+func bcryptHash(text string) (string, error) {
 	hash, err := bcrypt.GenerateFromPassword([]byte(text), bcrypt.DefaultCost)
 	if err != nil {
 		return "", err
@@ -22,8 +22,8 @@ func bcriptHash(text string) (string, error) {
 	return base64.StdEncoding.EncodeToString(hash), nil
 }
 
-func HashPassword(password string) (string, error) {
-	hash, err := bcriptHash(password)
+func HashBcryptPassword(password string) (string, error) {
+	hash, err := bcryptHash(password)
 	if err != nil {
 		return "", ErrHashPassword
 	}
