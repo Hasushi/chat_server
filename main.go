@@ -4,6 +4,7 @@ import (
 	authentication "chat_server/adapter/Authentication"
 	"chat_server/adapter/database"
 	"chat_server/router"
+	"chat_server/ulid"
 	"chat_server/usecase/interactor"
 	"fmt"
 	"log"
@@ -34,10 +35,12 @@ import (
 
 		authRepo := authentication.NewUserAuth()
 		userRepo := database.NewUserRepository(db)
+		ulid := ulid.NewULID()
 
 		userUC := interactor.NewUserUsecase(interactor.NewUserUsecaseArgs{
 			Auth: authRepo,
 			User: userRepo,
+			ULID: ulid,
 		})
 		s := router.NewServer(userUC)
 		defer s.Close()

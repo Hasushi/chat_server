@@ -17,7 +17,13 @@ func NewUserRepository(db *gorm.DB) output_port.User {
 }
 
 func (u *UserRepository) FindByID(userID string) (entity.User, error) {
-	return entity.User{}, nil
+	var model model.User
+	err := u.db.Model(&model).Where("user_id = ?", userID).First(&model).Error
+	if err != nil {
+		return entity.User{}, err
+	}
+
+	return model.ToEntity(), nil
 }
 
 func (u *UserRepository) Create(args output_port.CreateUserArgs) error {
