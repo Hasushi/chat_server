@@ -23,6 +23,7 @@ func NewServer(
 
 	api := e.Group("/api/v1")
 	api.POST("/register", userHandler.CreateUser)
+	api.POST("/login", userHandler.Login)
 
 	return e.Server
 }
