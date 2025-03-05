@@ -2,6 +2,7 @@ package main
 
 import (
 	authentication "chat_server/adapter/Authentication"
+	"chat_server/adapter/clock"
 	"chat_server/adapter/database"
 	"chat_server/router"
 	"chat_server/ulid"
@@ -36,11 +37,13 @@ import (
 		authRepo := authentication.NewUserAuth()
 		userRepo := database.NewUserRepository(db)
 		ulid := ulid.NewULID()
+		clock := clock.New()
 
 		userUC := interactor.NewUserUsecase(interactor.NewUserUsecaseArgs{
 			Auth: authRepo,
 			User: userRepo,
 			ULID: ulid,
+			Clock: clock,
 		})
 		s := router.NewServer(userUC)
 		defer s.Close()

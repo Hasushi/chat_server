@@ -37,3 +37,22 @@ func (h *UserHandler) CreateUser(c echo.Context) error {
 
 	return c.JSON(http.StatusCreated, res)
 }
+
+func (h *UserHandler) Login(c echo.Context) error {
+	var req schema.LoginReq
+	if err := c.Bind(&req); err != nil {
+		return echo.NewHTTPError(400, "Invalid request")
+	}
+
+	token, expiresAt, err := h.UserUC.Login(req.Email, req.Password)
+	if err != nil {
+		return echo.NewHTTPError(500, "Internal server error")
+	}
+
+	res := schema.LoginRes{
+		Token: token,
+		ExpiresAt: int64(expiresAt),
+	}
+
+	return c.JSON(http.StatusOK, res)
+}

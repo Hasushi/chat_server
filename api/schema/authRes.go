@@ -7,5 +7,5 @@ type CreateUserRes struct {
 
 type LoginRes struct {
 	Token string `json:"token"`
-	ExpiresAt string `json:"expires_at"`
+	ExpiresAt int64 `json:"expires_at"`
 }

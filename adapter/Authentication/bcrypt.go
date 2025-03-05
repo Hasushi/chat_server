@@ -30,7 +30,7 @@ func HashBcryptPassword(password string) (string, error) {
 	return hash, nil
 }
 
-func CheckPasswordHash(hashedPassword, password string) error {
+func CheckBcryptPassword(hashedPassword, password string) error {
 	decodedHash, err := base64.StdEncoding.DecodeString(hashedPassword)
 	if err != nil {
 		return ErrBase64Decode

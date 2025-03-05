@@ -14,5 +14,6 @@ func (u User) ToEntity() entity.User {
 		UserID: u.UserID,
 		UserName: u.UserName,
 		Email: u.Email,
+		HashedPassword: u.HashedPassword,
 	}
 }

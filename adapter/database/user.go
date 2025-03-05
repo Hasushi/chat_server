@@ -41,3 +41,13 @@ func (u *UserRepository) Create(args output_port.CreateUserArgs) error {
 
 	return nil
 }
+
+func (u *UserRepository) FindByEmail(email string) (entity.User, error) {
+	var model model.User
+	err := u.db.Model(&model).Where("email = ?", email).First(&model).Error
+	if err != nil {
+		return entity.User{}, err
+	}
+
+	return model.ToEntity(), nil
+}
