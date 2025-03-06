@@ -29,3 +29,19 @@ func Migrate(db *gorm.DB) error {
 
 	return nil
 }
+
+func Drop(db *gorm.DB) error {
+	tables, err := db.Migrator().GetTables()
+	if err != nil {
+		return errors.New("failed to get tables")
+	}
+
+	for _, table := range tables {
+		err = db.Migrator().DropTable(table)
+		if err != nil {
+			return errors.New("failed to drop table " + table)
+		}
+	}
+
+	return nil
+}

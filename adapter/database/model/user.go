@@ -1,12 +1,20 @@
 package model
 
-import "chat_server/domain/entity"
+import (
+	"chat_server/domain/entity"
+	"time"
+
+	"gorm.io/gorm"
+)
 
 type User struct {
 	UserID       string    
 	UserName string 
 	Email    string 
-	HashedPassword string 
+	HashedPassword string
+	CreatedAt time.Time
+	UpdatedAt time.Time
+	DeleteAt gorm.DeletedAt
 }
 
 func (u User) ToEntity() entity.User {
