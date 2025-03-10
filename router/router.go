@@ -22,9 +22,9 @@ func NewServer(
 	userHandler := handler.NewUserHandler(userUC)
 
 	api := e.Group("/api/v1")
-	api.POST("/register", userHandler.CreateUser)
-	users := api.Group("/users")
-	users.POST("/login", userHandler.Login)
+	auth := api.Group("/auth")
+	auth.POST("/register", userHandler.CreateUser)
+	auth.POST("/login", userHandler.Login)
 
 	return e.Server
 }

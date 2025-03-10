@@ -1,0 +1,573 @@
+openapi: 3.0.3
+info:
+  title: チャットサーバ API
+  description: >
+    このAPIは、ユーザー認証、チャットルーム管理、メッセージ送受信、通知機能、管理者機能など、
+    リアルタイムチャットシステムの主要機能を提供します。
+  version: "1.0.0"
+servers:
+  - url: http://localhost:8080
+    description: Local server
+  - url: https://api.example.com
+    description: Production server
+  - url: https://staging-api.example.com
+    description: Staging server
+
+components:
+  securitySchemes:
+    BearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+  schemas:
+    User:
+      type: object
+      properties:
+        id:
+          type: string
+          example: "user123"
+        email:
+          type: string
+          format: email
+          example: "user@example.com"
+        username:
+          type: string
+          example: "ユーザー名"
+        displayName:
+          type: string
+          example: "表示名"
+        iconUrl:
+          type: string
+          format: uri
+          example: "https://example.com/avatar.jpg"
+      required:
+        - id
+        - email
+        - username
+    AuthRequest:
+      type: object
+      properties:
+        email:
+          type: string
+          format: email
+          example: "user@example.com"
+        password:
+          type: string
+          format: password
+      required:
+        - email
+        - password
+    RegisterRequest:
+      type: object
+      properties:
+        email:
+          type: string
+          format: email
+          example: "user@example.com"
+        username:
+          type: string
+          example: "ユーザー名"
+        password:
+          type: string
+          format: password
+      required:
+        - email
+        - username
+        - password
+    AuthResponse:
+      type: object
+      properties:
+        token:
+          type: string
+          example: "jwt.token.here"
+        user:
+          $ref: '#/components/schemas/User'
+    ChatRoom:
+      type: object
+      properties:
+        id:
+          type: string
+          example: "room123"
+        name:
+          type: string
+          example: "チャットルーム名"
+        isGroup:
+          type: boolean
+          example: true
+      required:
+        - id
+        - name
+        - isGroup
+    CreateRoomRequest:
+      type: object
+      properties:
+        name:
+          type: string
+          example: "新しいチャットルーム"
+        isGroup:
+          type: boolean
+          example: true
+      required:
+        - name
+        - isGroup
+    Message:
+      type: object
+      properties:
+        id:
+          type: string
+          example: "msg123"
+        roomId:
+          type: string
+          example: "room123"
+        senderId:
+          type: string
+          example: "user123"
+        content:
+          type: string
+          example: "こんにちは！"
+        timestamp:
+          type: string
+          format: date-time
+          example: "2025-03-10T12:00:00Z"
+        read:
+          type: boolean
+          example: false
+      required:
+        - id
+        - roomId
+        - senderId
+        - content
+        - timestamp
+    SendMessageRequest:
+      type: object
+      properties:
+        content:
+          type: string
+          example: "こんにちは、チャットルーム！"
+        # 添付ファイルなどのオプション情報があれば、ここにプロパティを追加できます
+      required:
+        - content
+    Notification:
+      type: object
+      properties:
+        id:
+          type: string
+          example: "notif123"
+        type:
+          type: string
+          example: "new_message"
+        message:
+          type: string
+          example: "新しいメッセージがあります。"
+        timestamp:
+          type: string
+          format: date-time
+          example: "2025-03-10T12:05:00Z"
+    Error:
+      type: object
+      properties:
+        message:
+          type: string
+          example: "エラーメッセージ"
+
+paths:
+  /auth/register:
+    post:
+      summary: ユーザー登録
+      description: ユーザーの新規登録を行います。
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RegisterRequest'
+      responses:
+        '201':
+          description: ユーザー登録成功
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AuthResponse'
+        '400':
+          description: 入力エラー
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+  /auth/login:
+    post:
+      summary: ログイン
+      description: ユーザーの認証を行い、JWTトークンを発行します。
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AuthRequest'
+      responses:
+        '200':
+          description: ログイン成功
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AuthResponse'
+        '401':
+          description: 認証失敗
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+  /auth/logout:
+    post:
+      summary: ログアウト
+      description: ユーザーのログアウトを行います。
+      security:
+        - BearerAuth: []
+      responses:
+        '200':
+          description: ログアウト成功
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: "ログアウトしました。"
+  /users/me:
+    get:
+      summary: 自身のユーザープロフィール取得
+      description: ログイン中のユーザー情報を取得します。
+      security:
+        - BearerAuth: []
+      responses:
+        '200':
+          description: ユーザー情報
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
+    put:
+      summary: プロフィール更新
+      description: ユーザーのプロフィール情報（表示名、アイコンなど）を更新します。
+      security:
+        - BearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                displayName:
+                  type: string
+                  example: "新しい表示名"
+                iconUrl:
+                  type: string
+                  format: uri
+                  example: "https://example.com/new-avatar.jpg"
+      responses:
+        '200':
+          description: プロフィール更新成功
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
+  /rooms:
+    post:
+      summary: チャットルーム作成
+      description: 新しいチャットルームを作成します。
+      security:
+        - BearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateRoomRequest'
+      responses:
+        '201':
+          description: チャットルーム作成成功
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ChatRoom'
+    get:
+      summary: チャットルーム一覧取得
+      description: 利用可能なチャットルーム一覧を取得します。
+      security:
+        - BearerAuth: []
+      responses:
+        '200':
+          description: チャットルーム一覧
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/ChatRoom'
+  /rooms/{roomId}:
+    get:
+      summary: チャットルーム詳細取得
+      description: 指定したチャットルームの詳細情報を取得します。
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: roomId
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: チャットルーム詳細
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ChatRoom'
+        '404':
+          description: チャットルームが見つかりません
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+  /rooms/{roomId}/join:
+    post:
+      summary: チャットルーム参加
+      description: 指定したチャットルームに参加します。
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: roomId
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: 参加成功
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: "チャットルームに参加しました。"
+        '404':
+          description: チャットルームが見つかりません
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+  /rooms/{roomId}/leave:
+    post:
+      summary: チャットルーム退出
+      description: 指定したチャットルームから退出します。
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: roomId
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: 退出成功
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: "チャットルームから退出しました。"
+  /rooms/{roomId}/invite:
+    post:
+      summary: チャットルームへの招待
+      description: 指定したチャットルームにユーザーを招待します。
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: roomId
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                userId:
+                  type: string
+                  example: "user123"
+              required:
+                - userId
+      responses:
+        '200':
+          description: 招待成功
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: "ユーザーを招待しました。"
+  /rooms/{roomId}/messages:
+    get:
+      summary: チャットルームメッセージ履歴取得
+      description: 指定したチャットルームのメッセージ履歴を取得します。ページネーション（limit, offset）に対応。
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: roomId
+          in: path
+          required: true
+          schema:
+            type: string
+        - name: limit
+          in: query
+          description: 取得するメッセージ数
+          required: false
+          schema:
+            type: integer
+            default: 50
+        - name: offset
+          in: query
+          description: ページネーション用のオフセット
+          required: false
+          schema:
+            type: integer
+            default: 0
+      responses:
+        '200':
+          description: メッセージ履歴
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Message'
+    post:
+      summary: メッセージ送信
+      description: 指定したチャットルームにテキストメッセージ（および添付ファイル）を送信します。
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: roomId
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SendMessageRequest'
+      responses:
+        '201':
+          description: メッセージ送信成功
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Message'
+  /notifications:
+    get:
+      summary: 通知取得
+      description: ユーザー向けの通知一覧を取得します。
+      security:
+        - BearerAuth: []
+      responses:
+        '200':
+          description: 通知一覧
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Notification'
+  /admin/users:
+    get:
+      summary: ユーザー一覧取得（管理者用）
+      description: 管理者が全ユーザーの情報を取得します。
+      security:
+        - BearerAuth: []
+      responses:
+        '200':
+          description: ユーザー一覧
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/User'
+  /admin/users/{userId}/freeze:
+    put:
+      summary: ユーザー凍結（管理者用）
+      description: 管理者が特定のユーザーを凍結します。
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: userId
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: ユーザー凍結成功
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: "ユーザーを凍結しました。"
+  /admin/users/{userId}:
+    delete:
+      summary: ユーザー削除（管理者用）
+      description: 管理者が特定のユーザーを削除します。
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: userId
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: ユーザー削除成功
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: "ユーザーを削除しました。"
+  /admin/rooms:
+    get:
+      summary: チャットルーム一覧取得（管理者用）
+      description: 管理者が全チャットルームの情報を取得します。
+      security:
+        - BearerAuth: []
+      responses:
+        '200':
+          description: チャットルーム一覧
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/ChatRoom'
+
+security:
+  - BearerAuth: []
