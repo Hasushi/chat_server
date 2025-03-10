@@ -23,14 +23,14 @@ components:
     User:
       type: object
       properties:
-        id:
+        userId:
           type: string
           example: "user123"
         email:
           type: string
           format: email
           example: "user@example.com"
-        username:
+        userName:
           type: string
           example: "ユーザー名"
         displayName:
@@ -41,9 +41,9 @@ components:
           format: uri
           example: "https://example.com/avatar.jpg"
       required:
-        - id
+        - userId
         - email
-        - username
+        - userName
     AuthRequest:
       type: object
       properties:
@@ -64,7 +64,7 @@ components:
           type: string
           format: email
           example: "user@example.com"
-        username:
+        userName:
           type: string
           example: "ユーザー名"
         password:
@@ -72,7 +72,7 @@ components:
           format: password
       required:
         - email
-        - username
+        - userName
         - password
     AuthResponse:
       type: object
@@ -85,7 +85,7 @@ components:
     ChatRoom:
       type: object
       properties:
-        id:
+        roomId:
           type: string
           example: "room123"
         name:
@@ -95,7 +95,7 @@ components:
           type: boolean
           example: true
       required:
-        - id
+        - roomId
         - name
         - isGroup
     CreateRoomRequest:
@@ -113,7 +113,7 @@ components:
     Message:
       type: object
       properties:
-        id:
+        massageId:
           type: string
           example: "msg123"
         roomId:
@@ -133,7 +133,7 @@ components:
           type: boolean
           example: false
       required:
-        - id
+        - messageId
         - roomId
         - senderId
         - content
@@ -150,7 +150,7 @@ components:
     Notification:
       type: object
       properties:
-        id:
+        notifId:
           type: string
           example: "notif123"
         type:
