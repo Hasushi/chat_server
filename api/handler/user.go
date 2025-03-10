@@ -24,15 +24,20 @@ func (h *UserHandler) CreateUser(c echo.Context) error {
 		return echo.NewHTTPError(400, "Invalid request")
 	}
 	
-	user, err := h.UserUC.Create(req.UserName, req.Email, req.Password)
+	token, user, err := h.UserUC.Create(req.UserName, req.Email, req.Password)
 	if err != nil {
 		return echo.NewHTTPError(500, "Internal server error")
 	}
 
 	res := schema.CreateUserRes{
-		UserID:       user.UserID,
-		UserName: user.UserName,
-		Email:    user.Email,
+		Token: token,
+		User: schema.User{
+			UserID: user.UserID,
+			UserName: user.UserName,
+			Email: user.Email,
+			DisplayName: user.DisplayName,
+			IconUrl: user.IconUrl,
+		},
 	}
 
 	return c.JSON(http.StatusCreated, res)
@@ -44,14 +49,20 @@ func (h *UserHandler) Login(c echo.Context) error {
 		return echo.NewHTTPError(400, "Invalid request")
 	}
 
-	token, expiresAt, err := h.UserUC.Login(req.Email, req.Password)
+	token, user, err := h.UserUC.Login(req.Email, req.Password)
 	if err != nil {
 		return echo.NewHTTPError(500, "Internal server error")
 	}
 
 	res := schema.LoginRes{
 		Token: token,
-		ExpiresAt: int64(expiresAt),
+		User: schema.User{
+			UserID: user.UserID,
+			UserName: user.UserName,
+			Email: user.Email,
+			DisplayName: user.DisplayName,
+			IconUrl: user.IconUrl,
+		},
 	}
 
 	return c.JSON(http.StatusOK, res)

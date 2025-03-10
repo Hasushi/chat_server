@@ -12,6 +12,8 @@ type User struct {
 	UserName string 
 	Email    string 
 	HashedPassword string
+	DisplayName string
+	IconUrl string
 	CreatedAt time.Time
 	UpdatedAt time.Time
 	DeleteAt gorm.DeletedAt
@@ -23,5 +25,7 @@ func (u User) ToEntity() entity.User {
 		UserName: u.UserName,
 		Email: u.Email,
 		HashedPassword: u.HashedPassword,
+		DisplayName: u.DisplayName,
+		IconUrl: u.IconUrl,
 	}
 }

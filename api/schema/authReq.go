@@ -1,8 +1,8 @@
 package schema
 
 type CreateUserReq struct {
-	UserName string `json:"username"`
 	Email   string  `json:"email"`
+	UserName string `json:"username"`
 	Password string `json:"password"`
 }
 

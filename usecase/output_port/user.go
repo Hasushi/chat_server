@@ -25,6 +25,7 @@ type CreateUserArgs struct {
 	UserName string
 	Email string
 	HashedPassword string
+	// TODO iconどうするか
 }
 
 type User interface {

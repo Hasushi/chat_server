@@ -1,11 +1,12 @@
 package schema
+
+
 type CreateUserRes struct {
-	UserID       string    `json:"userid"`
-	UserName string `json:"username"`
-	Email    string `json:"email"`
+	Token string `json:"token"`
+	User User `json:"user"`
 }
 
 type LoginRes struct {
 	Token string `json:"token"`
-	ExpiresAt int64 `json:"expires_at"`
+	User User `json:"user"`
 }
