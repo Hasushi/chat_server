@@ -1,6 +1,7 @@
 package middleware
 
 import (
+	"chat_server/api/schema"
 	input_port "chat_server/usecase/input_port"
 	"net/http"
 	"strings"
@@ -24,7 +25,7 @@ func (a *AuthMiddleware) Authenticate(next echo.HandlerFunc) (echo.HandlerFunc){
 		if authHeader == "" {
 			return echo.NewHTTPError(http.StatusUnauthorized, "Authorization header is required")
 		}
-		token := strings.TrimPrefix(authHeader, "Bearer ")
+		token := strings.TrimPrefix(authHeader, schema.Bearer + " ")
 
 		userID, err := a.userUC.Authenticate(token)
 		if err != nil {
