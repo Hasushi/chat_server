@@ -32,6 +32,9 @@ func (u *UserRepository) Create(args output_port.CreateUserArgs) error {
 		UserName: args.UserName,
 		Email: args.Email,
 		HashedPassword: args.HashedPassword,
+		// 新規登録時はDisplayNameはUserNameと同じ
+		DisplayName: args.UserName,
+		IconUrl: "",
 	}
 
 	err := u.db.Create(&model).Error
