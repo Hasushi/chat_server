@@ -1,6 +1,6 @@
 package schema
 
-var Bearer = "Bearer"
+const Bearer = "Bearer"
 
 type CreateUserReq struct {
 	Email   string  `json:"email"`
