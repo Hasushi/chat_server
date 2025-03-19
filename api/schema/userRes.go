@@ -9,8 +9,3 @@ type User struct {
 }
 
 type FindUserRes User
-
-type ProfileUpdateReq struct {
-	DisplayName string `json:"displayName"`
-	IconUrl string `json:"iconUrl"`
-}
