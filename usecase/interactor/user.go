@@ -4,6 +4,7 @@ import (
 	"chat_server/domain/entity"
 	input_port "chat_server/usecase/input_port"
 	output_port "chat_server/usecase/output_port"
+	"errors"
 )
 
 type UserUsecase struct {
@@ -44,6 +45,12 @@ func (u *UserUsecase) FindByID(userID string) (entity.User, error) {
 }
 
 func (u *UserUsecase) Create(args input_port.CreateUserArgs) (string, entity.User, error) {
+	// アカウントが存在するかチェック
+	_, err := u.user.FindByEmail(args.Email)
+	if err == nil {
+		return "", entity.User{}, errors.New("email already exists")
+	}
+	
 	userID := u.ULID.GenerateID()
 	hp, err := u.auth.HashPassword(args.Password)
 	if err != nil {
