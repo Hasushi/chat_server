@@ -25,13 +25,13 @@ func (h *UserHandler) FindMe(c echo.Context) error {
 		return echo.NewHTTPError(http.StatusInternalServerError, "Internal server error")
 	}
 
-	res := schema.User{
+	res := schema.FindUserRes{
 		UserID: user.UserID,
 		UserName: user.UserName,
 		Email: user.Email,
 		DisplayName: user.DisplayName,
 		IconUrl: user.IconUrl,
 	}
-
+	
 	return c.JSON(http.StatusOK, res)
 }

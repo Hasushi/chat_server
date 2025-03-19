@@ -7,3 +7,10 @@ type User struct {
 	DisplayName string `json:"displayName"`
 	IconUrl string `json:"iconUrl"`
 }
+
+type FindUserRes User
+
+type ProfileUpdateReq struct {
+	DisplayName string `json:"displayName"`
+	IconUrl string `json:"iconUrl"`
+}
