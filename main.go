@@ -5,7 +5,7 @@ import (
 	"chat_server/adapter/clock"
 	"chat_server/adapter/database"
 	"chat_server/router"
-	"chat_server/ulid"
+	"chat_server/adapter/ulid"
 	"chat_server/usecase/interactor"
 	"fmt"
 	"log"
