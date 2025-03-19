@@ -28,8 +28,15 @@ type CreateUserArgs struct {
 	// TODO iconどうするか
 }
 
+type UpdateUserArgs struct {
+	UserID string
+	DisplayName string
+	IconUrl string
+}
+
 type User interface {
 	Create(args CreateUserArgs) error
 	FindByID(userID string) (entity.User, error)
 	FindByEmail(email string) (entity.User, error)
+	Update(args UpdateUserArgs) error
 }

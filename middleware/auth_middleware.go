@@ -6,7 +6,6 @@ import (
 	input_port "chat_server/usecase/input_port"
 	"context"
 	"errors"
-	"fmt"
 	"net/http"
 	"strings"
 
@@ -30,19 +29,16 @@ func (a *AuthMiddleware) Authenticate(next echo.HandlerFunc) (echo.HandlerFunc){
 			return echo.NewHTTPError(http.StatusUnauthorized, "Authorization header is required")
 		}
 		token := strings.TrimPrefix(authHeader, schema.Bearer + " ")
-		fmt.Println(token)
 
 		userID, err := a.userUC.Authenticate(token)
 		if err != nil {
 			return echo.NewHTTPError(http.StatusUnauthorized, "Invalid token")
 		}
-		fmt.Println(userID)
 
 		user, err := a.userUC.FindByID(userID)
 		if err != nil {
 			return echo.NewHTTPError(http.StatusUnauthorized, "Invalid token")
 		}
-		fmt.Println(user)
 
 		setContext(c, user)
 
