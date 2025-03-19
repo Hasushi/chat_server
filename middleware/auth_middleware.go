@@ -5,6 +5,7 @@ import (
 	"chat_server/domain/entity"
 	input_port "chat_server/usecase/input_port"
 	"context"
+	"errors"
 	"net/http"
 	"strings"
 
@@ -56,6 +57,11 @@ func setUserToContext(ctx context.Context, user entity.User) context.Context {
 	return context.WithValue(ctx, contextUserKey{}, user)
 }
 
-func GetUserFromContext(ctx context.Context) entity.User {
-	return ctx.Value(contextUserKey{}).(entity.User)
+func GetUserFromContext(ctx context.Context) (entity.User, error) {
+	v := ctx.Value(contextUserKey{})
+	user, ok := v.(entity.User)
+	if !ok {
+		return entity.User{}, errors.New("user not found in context")
+	}
+	return user, nil
 }
