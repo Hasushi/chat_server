@@ -2,7 +2,9 @@ package middleware
 
 import (
 	"chat_server/api/schema"
+	"chat_server/domain/entity"
 	input_port "chat_server/usecase/input_port"
+	"context"
 	"net/http"
 	"strings"
 
@@ -32,11 +34,28 @@ func (a *AuthMiddleware) Authenticate(next echo.HandlerFunc) (echo.HandlerFunc){
 			return echo.NewHTTPError(http.StatusUnauthorized, "Invalid token")
 		}
 
-		_, err = a.userUC.FindByID(userID)
+		user, err := a.userUC.FindByID(userID)
 		if err != nil {
 			return echo.NewHTTPError(http.StatusUnauthorized, "Invalid token")
 		}
+		setContext(c, user)
 
 		return next(c)
 	}
+}
+
+func setContext(c echo.Context, user entity.User) {
+	ctx := c.Request().Context()
+	ctx = setUserToContext(ctx, user)
+	c.SetRequest(c.Request().WithContext(ctx))
+}
+
+type contextUserKey struct{}
+
+func setUserToContext(ctx context.Context, user entity.User) context.Context {
+	return context.WithValue(ctx, contextUserKey{}, user)
+}
+
+func GetUserFromContext(ctx context.Context) entity.User {
+	return ctx.Value(contextUserKey{}).(entity.User)
 }
