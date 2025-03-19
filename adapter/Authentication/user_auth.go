@@ -12,7 +12,7 @@ func NewUserAuth() output_port.UserAuth {
 }
 
 func (u *UserAuth) Authenticate(token string) (string, error) {
-	return "", nil
+	return VerifyUserToken(token, []string{output_port.TokenScopeGeneral})
 }
 
 func (u *UserAuth) HashPassword(password string) (string, error) {

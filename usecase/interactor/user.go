@@ -35,7 +35,12 @@ func (u *UserUsecase) Authenticate(token string) (string, error) {
 }
 
 func (u *UserUsecase) FindByID(userID string) (entity.User, error) {
-	return entity.User{}, nil
+	user, err := u.user.FindByID(userID)
+	if err != nil {
+		return entity.User{}, err
+	}
+
+	return user, nil
 }
 
 func (u *UserUsecase) Create(userName string, email string, password string) (string, entity.User, error) {

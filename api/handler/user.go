@@ -19,56 +19,6 @@ func NewUserHandler(userUC input_port.IUserUsecase) *UserHandler {
 	}
 }
 
-func (h *UserHandler) CreateUser(c echo.Context) error {
-	var req schema.CreateUserReq
-	if err := c.Bind(&req); err != nil {
-		return echo.NewHTTPError(http.StatusBadRequest, "Invalid request")
-	}
-	
-	token, user, err := h.UserUC.Create(req.UserName, req.Email, req.Password)
-	if err != nil {
-		return echo.NewHTTPError(http.StatusInternalServerError, "Internal server error")
-	}
-
-	res := schema.CreateUserRes{
-		Token: token,
-		User: schema.User{
-			UserID: user.UserID,
-			UserName: user.UserName,
-			Email: user.Email,
-			DisplayName: user.DisplayName,
-			IconUrl: user.IconUrl,
-		},
-	}
-
-	return c.JSON(http.StatusCreated, res)
-}
-
-func (h *UserHandler) Login(c echo.Context) error {
-	var req schema.LoginReq
-	if err := c.Bind(&req); err != nil {
-		return echo.NewHTTPError(http.StatusBadRequest, "Invalid request")
-	}
-
-	token, user, err := h.UserUC.Login(req.Email, req.Password)
-	if err != nil {
-		return echo.NewHTTPError(http.StatusInternalServerError, "Internal server error")
-	}
-
-	res := schema.LoginRes{
-		Token: token,
-		User: schema.User{
-			UserID: user.UserID,
-			UserName: user.UserName,
-			Email: user.Email,
-			DisplayName: user.DisplayName,
-			IconUrl: user.IconUrl,
-		},
-	}
-
-	return c.JSON(http.StatusOK, res)
-}
-
 func (h *UserHandler) FindMe(c echo.Context) error {
 	user, err := middleware.GetUserFromContext(c.Request().Context())
 	if err != nil {
