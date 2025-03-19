@@ -2,6 +2,7 @@ package handler
 
 import (
 	"chat_server/api/schema"
+	"chat_server/middleware"
 	input_port "chat_server/usecase/input_port"
 	"net/http"
 
@@ -63,6 +64,23 @@ func (h *UserHandler) Login(c echo.Context) error {
 			DisplayName: user.DisplayName,
 			IconUrl: user.IconUrl,
 		},
+	}
+
+	return c.JSON(http.StatusOK, res)
+}
+
+func (h *UserHandler) FindMe(c echo.Context) error {
+	user, err := middleware.GetUserFromContext(c.Request().Context())
+	if err != nil {
+		return echo.NewHTTPError(500, "Internal server error")
+	}
+
+	res := schema.User{
+		UserID: user.UserID,
+		UserName: user.UserName,
+		Email: user.Email,
+		DisplayName: user.DisplayName,
+		IconUrl: user.IconUrl,
 	}
 
 	return c.JSON(http.StatusOK, res)
