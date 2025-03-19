@@ -1,3 +1,5 @@
+![CodeRabbit Pull Request Reviews](https://img.shields.io/coderabbit/prs/github/Hasushi/chat_server?utm_source=oss&utm_medium=github&utm_campaign=Hasushi%2Fchat_server&labelColor=171717&color=FF570A&link=https%3A%2F%2Fcoderabbit.ai&label=CodeRabbit+Reviews)
+
 # チャットサーバ
 
 ## 1. 目的
