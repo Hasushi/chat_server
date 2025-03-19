@@ -54,3 +54,18 @@ func (u *UserRepository) FindByEmail(email string) (entity.User, error) {
 
 	return model.ToEntity(), nil
 }
+
+func (u *UserRepository) Update(args output_port.UpdateUserArgs) error {
+	model := model.User{
+		UserID: args.UserID,
+		DisplayName: args.DisplayName,
+		IconUrl: args.IconUrl,
+	}
+
+	err := u.db.Model(&model).Where("user_id = ?", args.UserID).Updates(&model).Error
+	if err != nil {
+		return err
+	}
+
+	return nil
+}

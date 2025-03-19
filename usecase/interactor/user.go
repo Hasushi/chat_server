@@ -43,22 +43,22 @@ func (u *UserUsecase) FindByID(userID string) (entity.User, error) {
 	return user, nil
 }
 
-func (u *UserUsecase) Create(userName string, email string, password string) (string, entity.User, error) {
+func (u *UserUsecase) Create(args input_port.CreateUserArgs) (string, entity.User, error) {
 	userID := u.ULID.GenerateID()
-	hp, err := u.auth.HashPassword(password)
+	hp, err := u.auth.HashPassword(args.Password)
 	if err != nil {
 		return "", entity.User{}, err
 	}
 
-	args := output_port.CreateUserArgs{
+	createArgs := output_port.CreateUserArgs{
 		UserID: userID,
-		UserName: userName,
-		Email: email,
+		UserName: args.UserName,
+		Email: args.Email,
 		HashedPassword: hp,
 	}
 
 	// TODO transaction
-	err = u.user.Create(args)
+	err = u.user.Create(createArgs)
 	if err != nil {
 		return "", entity.User{}, err
 	}
@@ -93,4 +93,29 @@ func (u *UserUsecase) Login(email string, password string) (string, entity.User,
 	}
 
 	return token, user, nil
+}
+
+func (u *UserUsecase) Update(args input_port.UpdateUserArgs) (entity.User, error) {
+	user, err := u.user.FindByID(args.UserID)
+	if err != nil {
+		return entity.User{}, err
+	}
+
+	updateArgs := output_port.UpdateUserArgs{
+		UserID: user.UserID,
+		DisplayName: args.DisplayName,
+		IconUrl: args.IconUrl,
+	}
+
+	err = u.user.Update(updateArgs)
+	if err != nil {
+		return entity.User{}, err
+	}
+
+	updatedUser, err := u.user.FindByID(args.UserID)
+	if err != nil {
+		return entity.User{}, err
+	}
+
+	return updatedUser, nil
 }

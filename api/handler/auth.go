@@ -24,7 +24,12 @@ func (h *AuthHandler) CreateUser(c echo.Context) error {
 		return echo.NewHTTPError(http.StatusBadRequest, "Invalid request")
 	}
 	
-	token, user, err := h.UserUC.Create(req.UserName, req.Email, req.Password)
+	token, user, err := h.UserUC.Create(input_port.CreateUserArgs{
+		UserName: req.UserName,
+		Email: req.Email,
+		Password: req.Password,
+	})
+	
 	if err != nil {
 		return echo.NewHTTPError(http.StatusInternalServerError, "Internal server error")
 	}
