@@ -12,6 +12,7 @@ type UserUsecase struct {
 	user output_port.User
 	output_port.ULID
 	clock output_port.Clock
+	transaction output_port.GormTransaction
 }
 
 type NewUserUsecaseArgs struct {
@@ -19,6 +20,7 @@ type NewUserUsecaseArgs struct {
 	User output_port.User
 	ULID output_port.ULID
 	Clock output_port.Clock
+	Transaction output_port.GormTransaction
 }
 
 func NewUserUsecase(args NewUserUsecaseArgs) input_port.IUserUsecase {
@@ -28,6 +30,7 @@ func NewUserUsecase(args NewUserUsecaseArgs) input_port.IUserUsecase {
 		user: args.User,
 		ULID: args.ULID,
 		clock: args.Clock,
+		transaction: args.Transaction,
 	}
 }
 

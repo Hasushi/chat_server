@@ -38,12 +38,14 @@ import (
 		userRepo := database.NewUserRepository(db)
 		ulid := ulid.NewULID()
 		clock := clock.New()
+		transaction := database.NewGormTransaction(db)
 
 		userUC := interactor.NewUserUsecase(interactor.NewUserUsecaseArgs{
 			Auth: authRepo,
 			User: userRepo,
 			ULID: ulid,
 			Clock: clock,
+			Transaction: transaction,
 		})
 		s := router.NewServer(userUC)
 		defer s.Close()
