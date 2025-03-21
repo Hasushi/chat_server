@@ -17,8 +17,21 @@ func NewUserRepository(db *gorm.DB) output_port.User {
 }
 
 func (u *UserRepository) FindByID(userID string) (entity.User, error) {
+	return findByID(u.db, userID)
+}
+
+func (u *UserRepository) FindByIDWithTx(tx interface{}, userID string) (entity.User, error) {
+	db, ok := tx.(*gorm.DB)
+	if !ok {
+		return entity.User{}, output_port.ErrInvalidTransaction
+	}
+
+	return findByID(db, userID)
+}
+
+func findByID(db *gorm.DB, userID string) (entity.User, error) {
 	var model model.User
-	err := u.db.Model(&model).Where("user_id = ?", userID).First(&model).Error
+	err := db.Model(&model).Where("user_id = ?", userID).First(&model).Error
 	if err != nil {
 		return entity.User{}, err
 	}
@@ -27,6 +40,19 @@ func (u *UserRepository) FindByID(userID string) (entity.User, error) {
 }
 
 func (u *UserRepository) Create(args output_port.CreateUserArgs) error {
+	return create(u.db, args)
+}
+
+func (u *UserRepository) CreateWithTx(tx interface{}, args output_port.CreateUserArgs) error {
+	db, ok := tx.(*gorm.DB)
+	if !ok {
+		return output_port.ErrInvalidTransaction
+	}
+
+	return create(db, args)
+}
+
+func create(db *gorm.DB, args output_port.CreateUserArgs) error {
 	model := model.User{
 		UserID: args.UserID,
 		UserName: args.UserName,
@@ -37,7 +63,7 @@ func (u *UserRepository) Create(args output_port.CreateUserArgs) error {
 		IconUrl: "",
 	}
 
-	err := u.db.Create(&model).Error
+	err := db.Create(&model).Error
 	if err != nil {
 		return err
 	}
@@ -56,13 +82,27 @@ func (u *UserRepository) FindByEmail(email string) (entity.User, error) {
 }
 
 func (u *UserRepository) Update(args output_port.UpdateUserArgs) error {
+	return update(u.db, args)
+}
+
+func (u *UserRepository) UpdateWithTx(tx interface{}, args output_port.UpdateUserArgs) error {
+	db, ok := tx.(*gorm.DB)
+	if !ok {
+		return output_port.ErrInvalidTransaction
+	}
+
+	return update(db, args)
+}
+
+
+func update(db *gorm.DB, args output_port.UpdateUserArgs) error {
 	model := model.User{
 		UserID: args.UserID,
 		DisplayName: args.DisplayName,
 		IconUrl: args.IconUrl,
 	}
 
-	err := u.db.Model(&model).Where("user_id = ?", args.UserID).Updates(&model).Error
+	err := db.Model(&model).Where("user_id = ?", args.UserID).Updates(&model).Error
 	if err != nil {
 		return err
 	}
