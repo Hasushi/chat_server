@@ -36,7 +36,10 @@ type UpdateUserArgs struct {
 
 type User interface {
 	Create(args CreateUserArgs) error
+	CreateWithTx(tx interface{}, args CreateUserArgs) error
 	FindByID(userID string) (entity.User, error)
+	FindByIDWithTx(tx interface{}, userID string) (entity.User, error)
 	FindByEmail(email string) (entity.User, error)
 	Update(args UpdateUserArgs) error
+	UpdateWithTx(tx interface{}, args UpdateUserArgs) error
 }
