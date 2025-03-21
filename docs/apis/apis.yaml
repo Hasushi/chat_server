@@ -67,33 +67,21 @@ paths:
                     type: string
         '401':
           description: 認証失敗
-
-  /users/{userId}:
+  
+  /users/me:
     get:
-      summary: ユーザープロフィール取得
-      description: 指定したユーザーIDのプロフィール情報を取得します。
-      parameters:
-        - name: userId
-          in: path
-          required: true
-          schema:
-            type: string
+      summary: ユーザー情報取得
+      description: 認証ユーザーのプロフィール情報を取得します。
       responses:
         '200':
-          description: ユーザープロフィールの取得に成功しました。
+          description: ユーザー情報の取得に成功しました。
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/PublicUser'
+                $ref: '#/components/schemas/User'
     put:
-      summary: ユーザープロフィール更新
-      description: ユーザー自身のプロフィール情報を更新します。
-      parameters:
-        - name: userId
-          in: path
-          required: true
-          schema:
-            type: string
+      summary: ユーザー情報更新
+      description: 認証ユーザーのプロフィール情報を更新します。
       requestBody:
         required: true
         content:
@@ -113,6 +101,24 @@ paths:
           description: プロフィールが正常に更新されました。
         '400':
           description: リクエストエラー
+
+  /users/{userId}:
+    get:
+      summary: ユーザープロフィール取得
+      description: 指定したユーザーIDのプロフィール情報を取得します。
+      parameters:
+        - name: userId
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: ユーザープロフィールの取得に成功しました。
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PublicUser'
 
   /admin/users:
     get:
