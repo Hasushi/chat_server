@@ -47,6 +47,19 @@ paths:
                 type: array
                 items:
                   $ref: '#/components/schemas/User'
+  /users/me:
+    get:
+      summary: 自分のプロフィール取得
+      description: 認証済みのユーザーが自分のプロフィール情報を取得します。
+      responses:
+        '200':
+          description: プロフィール情報の取得に成功しました。
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
+        '401':
+          description: 認証エラー
   /users/{userId}:
     get:
       summary: ユーザープロフィール取得
@@ -63,7 +76,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/User'
+                $ref: '#/components/schemas/PublicUser'
     put:
       summary: ユーザープロフィール更新
       description: ユーザー自身のプロフィール情報を更新します。
@@ -349,9 +362,9 @@ components:
     User:
       type: object
       properties:
-        id:
+        userId:
           type: string
-        username:
+        userName:
           type: string
         email:
           type: string
@@ -360,10 +373,21 @@ components:
           type: string
         avatarUrl:
           type: string
+    PublicUser:
+      type: object
+      properties:
+        userId:
+          type: string
+        userName:
+          type: string
+        bio:
+          type: string
+        avatarUrl:
+          type: string
     Tweet:
       type: object
       properties:
-        id:
+        tweetId:
           type: string
         content:
           type: string
@@ -373,11 +397,17 @@ components:
           type: string
           format: date-time
         author:
-          $ref: '#/components/schemas/User'
+          $ref: '#/components/schemas/PublicUser'
+        likes:
+          type: integer
+        retweets:
+          type: integer
+        replies:
+          type: integer
     Notification:
       type: object
       properties:
-        id:
+        notifyId:
           type: string
         type:
           type: string
