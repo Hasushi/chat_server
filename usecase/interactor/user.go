@@ -67,13 +67,20 @@ func (u *UserUsecase) Create(args input_port.CreateUserArgs) (string, entity.Use
 		HashedPassword: hp,
 	}
 
-	// TODO transaction
-	err = u.user.Create(createArgs)
-	if err != nil {
-		return "", entity.User{}, err
-	}
+	var user entity.User
+	err = u.transaction.StartTransaction(func(tx interface{}) error {
+		err := u.user.CreateWithTx(tx, createArgs)
+		if err != nil {
+			return err
+		}
 
-	user, err := u.user.FindByID(userID)
+		user, err = u.user.FindByIDWithTx(tx, userID)
+		if err != nil {
+			return err
+		}
+
+		return nil
+	})
 	if err != nil {
 		return "", entity.User{}, err
 	}
