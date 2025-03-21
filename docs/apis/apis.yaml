@@ -8,7 +8,7 @@ info:
 servers:
   - url: http://localhost:8080/api/v1
 paths:
-  /users:
+  /auth/register:
     post:
       summary: ユーザー登録
       description: 新規ユーザーの登録を行います。
@@ -19,7 +19,7 @@ paths:
             schema:
               type: object
               properties:
-                username:
+                userName:
                   type: string
                 email:
                   type: string
@@ -27,7 +27,7 @@ paths:
                 password:
                   type: string
               required:
-                - username
+                - userName
                 - email
                 - password
       responses:
@@ -35,31 +35,39 @@ paths:
           description: ユーザーが正常に作成されました。
         '400':
           description: リクエストエラー
-    get:
-      summary: ユーザー一覧取得（管理者向け）
-      description: ユーザーの一覧を取得します。
+  
+  /auth/login:
+    post:
+      summary: ログイン認証
+      description: ユーザーの認証を行い、アクセストークンを返します。
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                email:
+                  type: string
+                  format: email
+                password:
+                  type: string
+              required:
+                - email
+                - password
       responses:
         '200':
-          description: ユーザー一覧の取得に成功しました。
+          description: 認証に成功し、トークンを返します。
           content:
             application/json:
               schema:
-                type: array
-                items:
-                  $ref: '#/components/schemas/User'
-  /users/me:
-    get:
-      summary: 自分のプロフィール取得
-      description: 認証済みのユーザーが自分のプロフィール情報を取得します。
-      responses:
-        '200':
-          description: プロフィール情報の取得に成功しました。
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/User'
+                type: object
+                properties:
+                  token:
+                    type: string
         '401':
-          description: 認証エラー
+          description: 認証失敗
+
   /users/{userId}:
     get:
       summary: ユーザープロフィール取得
@@ -105,37 +113,21 @@ paths:
           description: プロフィールが正常に更新されました。
         '400':
           description: リクエストエラー
-  /auth/login:
-    post:
-      summary: ログイン認証
-      description: ユーザーの認証を行い、アクセストークンを返します。
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              type: object
-              properties:
-                email:
-                  type: string
-                  format: email
-                password:
-                  type: string
-              required:
-                - email
-                - password
+
+  /admin/users:
+    get:
+      summary: ユーザー一覧取得（管理者向け）
+      description: ユーザーの一覧を取得します。
       responses:
         '200':
-          description: 認証に成功し、トークンを返します。
+          description: ユーザー一覧の取得に成功しました。
           content:
             application/json:
               schema:
-                type: object
-                properties:
-                  token:
-                    type: string
-        '401':
-          description: 認証失敗
+                type: array
+                items:
+                  $ref: '#/components/schemas/User'
+
   /tweets:
     post:
       summary: ツイート投稿
