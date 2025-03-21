@@ -1,257 +1,17 @@
-openapi: 3.0.3
+openapi: 3.0.0
 info:
-  title: チャットサーバ API
-  description: >
-    このAPIは、ユーザー認証、チャットルーム管理、メッセージ送受信、通知機能、管理者機能など、
-    リアルタイムチャットシステムの主要機能を提供します。
+  title: Twitter-like API
   version: "1.0.0"
+  description: >
+    Twitter ライクなアプリケーションの API 定義です。  
+    ユーザー登録、認証、ツイート、タイムライン、フォロー、通知などの基本機能を含みます。
 servers:
   - url: http://localhost:8080/api/v1
-    description: Local server
-  - url: https://api.example.com
-    description: Production server
-  - url: https://staging-api.example.com
-    description: Staging server
-
-components:
-  securitySchemes:
-    BearerAuth:
-      type: http
-      scheme: bearer
-      bearerFormat: JWT
-  schemas:
-    User:
-      type: object
-      properties:
-        userId:
-          type: string
-          example: "user123"
-        email:
-          type: string
-          format: email
-          example: "user@example.com"
-        userName:
-          type: string
-          example: "ユーザー名"
-        displayName:
-          type: string
-          example: "表示名"
-        iconUrl:
-          type: string
-          format: uri
-          example: "https://example.com/avatar.jpg"
-      required:
-        - userId
-        - email
-        - userName
-    AuthRequest:
-      type: object
-      properties:
-        email:
-          type: string
-          format: email
-          example: "user@example.com"
-        password:
-          type: string
-          format: password
-      required:
-        - email
-        - password
-    RegisterRequest:
-      type: object
-      properties:
-        email:
-          type: string
-          format: email
-          example: "user@example.com"
-        userName:
-          type: string
-          example: "ユーザー名"
-        password:
-          type: string
-          format: password
-      required:
-        - email
-        - userName
-        - password
-    AuthResponse:
-      type: object
-      properties:
-        token:
-          type: string
-          example: "jwt.token.here"
-        user:
-          $ref: '#/components/schemas/User'
-    ChatRoom:
-      type: object
-      properties:
-        roomId:
-          type: string
-          example: "room123"
-        name:
-          type: string
-          example: "チャットルーム名"
-        isGroup:
-          type: boolean
-          example: true
-      required:
-        - roomId
-        - name
-        - isGroup
-    CreateRoomRequest:
-      type: object
-      properties:
-        name:
-          type: string
-          example: "新しいチャットルーム"
-        isGroup:
-          type: boolean
-          example: true
-      required:
-        - name
-        - isGroup
-    Message:
-      type: object
-      properties:
-        massageId:
-          type: string
-          example: "msg123"
-        roomId:
-          type: string
-          example: "room123"
-        senderId:
-          type: string
-          example: "user123"
-        content:
-          type: string
-          example: "こんにちは！"
-        timestamp:
-          type: string
-          format: date-time
-          example: "2025-03-10T12:00:00Z"
-        read:
-          type: boolean
-          example: false
-      required:
-        - messageId
-        - roomId
-        - senderId
-        - content
-        - timestamp
-    SendMessageRequest:
-      type: object
-      properties:
-        content:
-          type: string
-          example: "こんにちは、チャットルーム！"
-        # 添付ファイルなどのオプション情報があれば、ここにプロパティを追加できます
-      required:
-        - content
-    Notification:
-      type: object
-      properties:
-        notifId:
-          type: string
-          example: "notif123"
-        type:
-          type: string
-          example: "new_message"
-        message:
-          type: string
-          example: "新しいメッセージがあります。"
-        timestamp:
-          type: string
-          format: date-time
-          example: "2025-03-10T12:05:00Z"
-    Error:
-      type: object
-      properties:
-        message:
-          type: string
-          example: "エラーメッセージ"
-
 paths:
-  /auth/register:
+  /users:
     post:
       summary: ユーザー登録
-      description: ユーザーの新規登録を行います。
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/RegisterRequest'
-      responses:
-        '201':
-          description: ユーザー登録成功
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/AuthResponse'
-        '400':
-          description: 入力エラー
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Error'
-  /auth/login:
-    post:
-      summary: ログイン
-      description: ユーザーの認証を行い、JWTトークンを発行します。
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/AuthRequest'
-      responses:
-        '200':
-          description: ログイン成功
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/AuthResponse'
-        '401':
-          description: 認証失敗
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Error'
-  /auth/logout:
-    post:
-      summary: ログアウト
-      description: ユーザーのログアウトを行います。
-      security:
-        - BearerAuth: []
-      responses:
-        '200':
-          description: ログアウト成功
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  message:
-                    type: string
-                    example: "ログアウトしました。"
-  /users/me:
-    get:
-      summary: 自身のユーザープロフィール取得
-      description: ログイン中のユーザー情報を取得します。
-      security:
-        - BearerAuth: []
-      responses:
-        '200':
-          description: ユーザー情報
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/User'
-    put:
-      summary: プロフィール更新
-      description: ユーザーのプロフィール情報（表示名、アイコンなど）を更新します。
-      security:
-        - BearerAuth: []
+      description: 新規ユーザーの登録を行います。
       requestBody:
         required: true
         content:
@@ -259,142 +19,266 @@ paths:
             schema:
               type: object
               properties:
-                displayName:
+                username:
                   type: string
-                  example: "新しい表示名"
-                iconUrl:
+                email:
                   type: string
-                  format: uri
-                  example: "https://example.com/new-avatar.jpg"
-      responses:
-        '200':
-          description: プロフィール更新成功
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/User'
-  /rooms:
-    post:
-      summary: チャットルーム作成
-      description: 新しいチャットルームを作成します。
-      security:
-        - BearerAuth: []
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/CreateRoomRequest'
+                  format: email
+                password:
+                  type: string
+              required:
+                - username
+                - email
+                - password
       responses:
         '201':
-          description: チャットルーム作成成功
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ChatRoom'
+          description: ユーザーが正常に作成されました。
+        '400':
+          description: リクエストエラー
     get:
-      summary: チャットルーム一覧取得
-      description: 利用可能なチャットルーム一覧を取得します。
-      security:
-        - BearerAuth: []
+      summary: ユーザー一覧取得（管理者向け）
+      description: ユーザーの一覧を取得します。
       responses:
         '200':
-          description: チャットルーム一覧
+          description: ユーザー一覧の取得に成功しました。
           content:
             application/json:
               schema:
                 type: array
                 items:
-                  $ref: '#/components/schemas/ChatRoom'
-  /rooms/{roomId}:
+                  $ref: '#/components/schemas/User'
+  /users/{userId}:
     get:
-      summary: チャットルーム詳細取得
-      description: 指定したチャットルームの詳細情報を取得します。
-      security:
-        - BearerAuth: []
+      summary: ユーザープロフィール取得
+      description: 指定したユーザーIDのプロフィール情報を取得します。
       parameters:
-        - name: roomId
+        - name: userId
           in: path
           required: true
           schema:
             type: string
       responses:
         '200':
-          description: チャットルーム詳細
+          description: ユーザープロフィールの取得に成功しました。
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ChatRoom'
-        '404':
-          description: チャットルームが見つかりません
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Error'
-  /rooms/{roomId}/join:
+                $ref: '#/components/schemas/User'
+    put:
+      summary: ユーザープロフィール更新
+      description: ユーザー自身のプロフィール情報を更新します。
+      parameters:
+        - name: userId
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                bio:
+                  type: string
+                avatarUrl:
+                  type: string
+              example:
+                bio: "Hello, I'm using our Twitter-like app."
+                avatarUrl: "http://example.com/avatar.jpg"
+      responses:
+        '200':
+          description: プロフィールが正常に更新されました。
+        '400':
+          description: リクエストエラー
+  /auth/login:
     post:
-      summary: チャットルーム参加
-      description: 指定したチャットルームに参加します。
-      security:
-        - BearerAuth: []
-      parameters:
-        - name: roomId
-          in: path
-          required: true
-          schema:
-            type: string
+      summary: ログイン認証
+      description: ユーザーの認証を行い、アクセストークンを返します。
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                email:
+                  type: string
+                  format: email
+                password:
+                  type: string
+              required:
+                - email
+                - password
       responses:
         '200':
-          description: 参加成功
+          description: 認証に成功し、トークンを返します。
           content:
             application/json:
               schema:
                 type: object
                 properties:
-                  message:
+                  token:
                     type: string
-                    example: "チャットルームに参加しました。"
-        '404':
-          description: チャットルームが見つかりません
+        '401':
+          description: 認証失敗
+  /tweets:
+    post:
+      summary: ツイート投稿
+      description: 新規ツイートを投稿します。
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                content:
+                  type: string
+                  description: ツイート本文
+                imageUrl:
+                  type: string
+                  description: オプションの画像 URL
+              required:
+                - content
+      responses:
+        '201':
+          description: ツイートが正常に投稿されました。
+        '400':
+          description: リクエストエラー
+    get:
+      summary: ツイート一覧取得
+      description: ツイートの一覧を取得します（タイムライン、検索等に利用）。
+      parameters:
+        - name: page
+          in: query
+          schema:
+            type: integer
+            default: 1
+        - name: limit
+          in: query
+          schema:
+            type: integer
+            default: 20
+      responses:
+        '200':
+          description: ツイート一覧の取得に成功しました。
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Error'
-  /rooms/{roomId}/leave:
-    post:
-      summary: チャットルーム退出
-      description: 指定したチャットルームから退出します。
-      security:
-        - BearerAuth: []
+                type: array
+                items:
+                  $ref: '#/components/schemas/Tweet'
+  /tweets/{tweetId}:
+    get:
+      summary: ツイート詳細取得
+      description: 指定したツイートIDの詳細情報を取得します。
       parameters:
-        - name: roomId
+        - name: tweetId
           in: path
           required: true
           schema:
             type: string
       responses:
         '200':
-          description: 退出成功
+          description: ツイート詳細の取得に成功しました。
           content:
             application/json:
               schema:
-                type: object
-                properties:
-                  message:
-                    type: string
-                    example: "チャットルームから退出しました。"
-  /rooms/{roomId}/invite:
-    post:
-      summary: チャットルームへの招待
-      description: 指定したチャットルームにユーザーを招待します。
-      security:
-        - BearerAuth: []
+                $ref: '#/components/schemas/Tweet'
+    delete:
+      summary: ツイート削除
+      description: ツイートを削除します（投稿者または管理者のみ）。
       parameters:
-        - name: roomId
+        - name: tweetId
           in: path
           required: true
           schema:
             type: string
+      responses:
+        '200':
+          description: ツイートが正常に削除されました。
+        '403':
+          description: アクセスが拒否されました
+  /tweets/{tweetId}/like:
+    post:
+      summary: ツイートにいいね
+      description: 指定したツイートにいいねを付与します。
+      parameters:
+        - name: tweetId
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: いいねが正常に処理されました。
+  /tweets/{tweetId}/retweet:
+    post:
+      summary: リツイート
+      description: 指定したツイートをリツイートします。
+      parameters:
+        - name: tweetId
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: リツイートが正常に処理されました。
+  /tweets/{tweetId}/reply:
+    post:
+      summary: ツイートへの返信
+      description: 指定したツイートに対する返信を投稿します。
+      parameters:
+        - name: tweetId
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                content:
+                  type: string
+              required:
+                - content
+      responses:
+        '201':
+          description: 返信が正常に投稿されました。
+  /timeline:
+    get:
+      summary: タイムライン取得
+      description: 認証ユーザーのタイムライン（フォロー中のユーザーのツイート）を取得します。
+      parameters:
+        - name: page
+          in: query
+          schema:
+            type: integer
+            default: 1
+        - name: limit
+          in: query
+          schema:
+            type: integer
+            default: 20
+      responses:
+        '200':
+          description: タイムラインの取得に成功しました。
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Tweet'
+  /follow:
+    post:
+      summary: ユーザーのフォロー
+      description: 指定したユーザーをフォローします。
       requestBody:
         required: true
         content:
@@ -404,170 +288,103 @@ paths:
               properties:
                 userId:
                   type: string
-                  example: "user123"
               required:
                 - userId
       responses:
         '200':
-          description: 招待成功
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  message:
-                    type: string
-                    example: "ユーザーを招待しました。"
-  /rooms/{roomId}/messages:
+          description: フォロー処理が正常に完了しました。
+  /users/{userId}/followers:
     get:
-      summary: チャットルームメッセージ履歴取得
-      description: 指定したチャットルームのメッセージ履歴を取得します。ページネーション（limit, offset）に対応。
-      security:
-        - BearerAuth: []
+      summary: フォロワー一覧取得
+      description: 指定したユーザーのフォロワー一覧を取得します。
       parameters:
-        - name: roomId
+        - name: userId
           in: path
           required: true
           schema:
             type: string
-        - name: limit
-          in: query
-          description: 取得するメッセージ数
-          required: false
-          schema:
-            type: integer
-            default: 50
-        - name: offset
-          in: query
-          description: ページネーション用のオフセット
-          required: false
-          schema:
-            type: integer
-            default: 0
       responses:
         '200':
-          description: メッセージ履歴
-          content:
-            application/json:
-              schema:
-                type: array
-                items:
-                  $ref: '#/components/schemas/Message'
-    post:
-      summary: メッセージ送信
-      description: 指定したチャットルームにテキストメッセージ（および添付ファイル）を送信します。
-      security:
-        - BearerAuth: []
-      parameters:
-        - name: roomId
-          in: path
-          required: true
-          schema:
-            type: string
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/SendMessageRequest'
-      responses:
-        '201':
-          description: メッセージ送信成功
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Message'
-  /notifications:
-    get:
-      summary: 通知取得
-      description: ユーザー向けの通知一覧を取得します。
-      security:
-        - BearerAuth: []
-      responses:
-        '200':
-          description: 通知一覧
-          content:
-            application/json:
-              schema:
-                type: array
-                items:
-                  $ref: '#/components/schemas/Notification'
-  /admin/users:
-    get:
-      summary: ユーザー一覧取得（管理者用）
-      description: 管理者が全ユーザーの情報を取得します。
-      security:
-        - BearerAuth: []
-      responses:
-        '200':
-          description: ユーザー一覧
+          description: フォロワー一覧の取得に成功しました。
           content:
             application/json:
               schema:
                 type: array
                 items:
                   $ref: '#/components/schemas/User'
-  /admin/users/{userId}/freeze:
-    put:
-      summary: ユーザー凍結（管理者用）
-      description: 管理者が特定のユーザーを凍結します。
-      security:
-        - BearerAuth: []
-      parameters:
-        - name: userId
-          in: path
-          required: true
-          schema:
-            type: string
-      responses:
-        '200':
-          description: ユーザー凍結成功
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  message:
-                    type: string
-                    example: "ユーザーを凍結しました。"
-  /admin/users/{userId}:
-    delete:
-      summary: ユーザー削除（管理者用）
-      description: 管理者が特定のユーザーを削除します。
-      security:
-        - BearerAuth: []
-      parameters:
-        - name: userId
-          in: path
-          required: true
-          schema:
-            type: string
-      responses:
-        '200':
-          description: ユーザー削除成功
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  message:
-                    type: string
-                    example: "ユーザーを削除しました。"
-  /admin/rooms:
+  /users/{userId}/following:
     get:
-      summary: チャットルーム一覧取得（管理者用）
-      description: 管理者が全チャットルームの情報を取得します。
-      security:
-        - BearerAuth: []
+      summary: フォロー中ユーザー一覧取得
+      description: 指定したユーザーがフォロー中のユーザー一覧を取得します。
+      parameters:
+        - name: userId
+          in: path
+          required: true
+          schema:
+            type: string
       responses:
         '200':
-          description: チャットルーム一覧
+          description: フォロー中ユーザー一覧の取得に成功しました。
           content:
             application/json:
               schema:
                 type: array
                 items:
-                  $ref: '#/components/schemas/ChatRoom'
-
-security:
-  - BearerAuth: []
+                  $ref: '#/components/schemas/User'
+  /notifications:
+    get:
+      summary: 通知一覧取得
+      description: 認証ユーザーへの通知一覧を取得します。
+      responses:
+        '200':
+          description: 通知一覧の取得に成功しました。
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Notification'
+components:
+  schemas:
+    User:
+      type: object
+      properties:
+        id:
+          type: string
+        username:
+          type: string
+        email:
+          type: string
+          format: email
+        bio:
+          type: string
+        avatarUrl:
+          type: string
+    Tweet:
+      type: object
+      properties:
+        id:
+          type: string
+        content:
+          type: string
+        imageUrl:
+          type: string
+        createdAt:
+          type: string
+          format: date-time
+        author:
+          $ref: '#/components/schemas/User'
+    Notification:
+      type: object
+      properties:
+        id:
+          type: string
+        type:
+          type: string
+          description: >
+            通知の種類 (like, retweet, reply, follow など)
+        message:
+          type: string
+        createdAt:
+          type: string
+          format: date-time
