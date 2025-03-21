@@ -47,17 +47,17 @@ func (u *UserUsecase) FindByID(userID string) (entity.User, error) {
 	return user, nil
 }
 
-func (u *UserUsecase) Create(args input_port.CreateUserArgs) (string, entity.User, error) {
+func (u *UserUsecase) Create(args input_port.CreateUserArgs) error {
 	// アカウントが存在するかチェック
 	_, err := u.user.FindByEmail(args.Email)
 	if err == nil {
-		return "", entity.User{}, errors.New("email already exists")
+		return errors.New("email already exists")
 	}
 	
 	userID := u.ULID.GenerateID()
 	hp, err := u.auth.HashPassword(args.Password)
 	if err != nil {
-		return "", entity.User{}, err
+		return err
 	}
 
 	createArgs := output_port.CreateUserArgs{
@@ -67,14 +67,13 @@ func (u *UserUsecase) Create(args input_port.CreateUserArgs) (string, entity.Use
 		HashedPassword: hp,
 	}
 
-	var user entity.User
 	err = u.transaction.StartTransaction(func(tx interface{}) error {
 		err := u.user.CreateWithTx(tx, createArgs)
 		if err != nil {
 			return err
 		}
 
-		user, err = u.user.FindByIDWithTx(tx, userID)
+		_, err = u.user.FindByIDWithTx(tx, userID)
 		if err != nil {
 			return err
 		}
@@ -82,34 +81,29 @@ func (u *UserUsecase) Create(args input_port.CreateUserArgs) (string, entity.Use
 		return nil
 	})
 	if err != nil {
-		return "", entity.User{}, err
+		return err
 	}
 
-	token, err := u.auth.IssueUserToken(userID, u.clock.Now())
-	if err != nil {
-		return "", entity.User{}, err
-	}
-
-	return token, user, nil
+	return nil
 }
 
-func (u *UserUsecase) Login(email string, password string) (string, entity.User, error) {
+func (u *UserUsecase) Login(email string, password string) (string, error) {
 	user, err := u.user.FindByEmail(email)
 	if err != nil {
-		return "", entity.User{}, err
+		return "", err
 	}
 
 	err = u.auth.CheckPassword(user.HashedPassword, password)
 	if err != nil {
-		return "", entity.User{}, err
+		return "", err
 	}
 
 	token, err := u.auth.IssueUserToken(user.UserID, u.clock.Now())
 	if err != nil {
-		return "", entity.User{}, err
+		return "", err
 	}
 
-	return token, user, nil
+	return token, nil
 }
 
 func (u *UserUsecase) Update(args input_port.UpdateUserArgs) (entity.User, error) {
