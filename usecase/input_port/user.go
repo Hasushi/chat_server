@@ -12,7 +12,7 @@ type CreateUserArgs struct {
 
 type UpdateUserArgs struct {
 	UserID string
-	DisplayName string
+	Bio string
 	IconUrl string
 }
 

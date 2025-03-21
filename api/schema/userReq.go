@@ -1,6 +1,6 @@
 package schema
 
 type ProfileUpdateReq struct {
-	DisplayName string `json:"displayName"`
+	Bio string `json:"bio"`
 	IconUrl string `json:"iconUrl"`
 }

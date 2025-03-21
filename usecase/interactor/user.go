@@ -114,7 +114,7 @@ func (u *UserUsecase) Update(args input_port.UpdateUserArgs) (entity.User, error
 
 	updateArgs := output_port.UpdateUserArgs{
 		UserID: user.UserID,
-		DisplayName: args.DisplayName,
+		Bio: args.Bio,
 		IconUrl: args.IconUrl,
 	}
 

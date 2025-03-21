@@ -12,7 +12,7 @@ type User struct {
 	UserName string 
 	Email    string 
 	HashedPassword string
-	DisplayName string
+	Bio string
 	IconUrl string
 	CreatedAt time.Time
 	UpdatedAt time.Time
@@ -25,7 +25,7 @@ func (u User) ToEntity() entity.User {
 		UserName: u.UserName,
 		Email: u.Email,
 		HashedPassword: u.HashedPassword,
-		DisplayName: u.DisplayName,
+		Bio: u.Bio,
 		IconUrl: u.IconUrl,
 	}
 }

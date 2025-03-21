@@ -58,8 +58,7 @@ func create(db *gorm.DB, args output_port.CreateUserArgs) error {
 		UserName: args.UserName,
 		Email: args.Email,
 		HashedPassword: args.HashedPassword,
-		// 新規登録時はDisplayNameはUserNameと同じ
-		DisplayName: args.UserName,
+		Bio: "",
 		IconUrl: "",
 	}
 
@@ -98,7 +97,7 @@ func (u *UserRepository) UpdateWithTx(tx interface{}, args output_port.UpdateUse
 func update(db *gorm.DB, args output_port.UpdateUserArgs) error {
 	model := model.User{
 		UserID: args.UserID,
-		DisplayName: args.DisplayName,
+		Bio: args.Bio,
 		IconUrl: args.IconUrl,
 	}
 

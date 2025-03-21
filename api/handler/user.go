@@ -29,7 +29,7 @@ func (h *UserHandler) FindMe(c echo.Context) error {
 		UserID: user.UserID,
 		UserName: user.UserName,
 		Email: user.Email,
-		DisplayName: user.DisplayName,
+		Bio: user.Bio,
 		IconUrl: user.IconUrl,
 	}
 
@@ -49,7 +49,7 @@ func (h *UserHandler) UpdateMe(c echo.Context) error {
 
 	updatedUser, err := h.UserUC.Update(input_port.UpdateUserArgs{
 		UserID: user.UserID,
-		DisplayName: req.DisplayName,
+		Bio: req.Bio,
 		IconUrl: req.IconUrl,
 	})
 	if err != nil {
@@ -60,7 +60,7 @@ func (h *UserHandler) UpdateMe(c echo.Context) error {
 		UserID: updatedUser.UserID,
 		UserName: updatedUser.UserName,
 		Email: updatedUser.Email,
-		DisplayName: updatedUser.DisplayName,
+		Bio: updatedUser.Bio,
 		IconUrl: updatedUser.IconUrl,
 	}
 
