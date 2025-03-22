@@ -36,6 +36,7 @@ import (
 
 		authRepo := authentication.NewUserAuth()
 		userRepo := database.NewUserRepository(db)
+		tweetRepo := database.NewTweetRepository(db)
 		ulid := ulid.NewULID()
 		clock := clock.New()
 		transaction := database.NewGormTransaction(db)
@@ -47,7 +48,15 @@ import (
 			Clock: clock,
 			Transaction: transaction,
 		})
-		s := router.NewServer(userUC)
+
+		tweetUC := interactor.NewTweetUsecase(interactor.NewTweetUsecaseArgs{
+			TweetRepo: tweetRepo,
+			Clock: clock,
+			ULID: ulid,
+			Transaction: transaction,
+		})
+
+		s := router.NewServer(userUC, tweetUC)
 		defer s.Close()
 
 		server := &http.Server{
