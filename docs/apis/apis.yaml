@@ -162,7 +162,7 @@ paths:
       summary: ツイート一覧取得
       description: ツイートの一覧を取得します（タイムライン、検索等に利用）。
       parameters:
-        - name: page
+        - name: skip
           in: query
           schema:
             type: integer
@@ -267,7 +267,7 @@ paths:
       summary: タイムライン取得
       description: 認証ユーザーのタイムライン（フォロー中のユーザーのツイート）を取得します。
       parameters:
-        - name: page
+        - name: skip
           in: query
           schema:
             type: integer
@@ -397,11 +397,24 @@ components:
         author:
           $ref: '#/components/schemas/PublicUser'
         likes:
-          type: integer
+          type: array
+          items:
+            properties:
+              userId:
+                type: string
         retweets:
-          type: integer
+          type: array
+          items:
+            properties:
+              userId:
+                type: string
         replies:
-          type: integer
+          type: array
+          items:
+            properties:
+              replyId:
+                type: string
+
     Notification:
       type: object
       properties:

@@ -12,6 +12,7 @@ import (
 
 func NewServer(
 	userUC input_port.IUserUsecase,
+	tweetUC input_port.ITweetUsecase,
 ) *http.Server {
 	e := echo.New()
 
@@ -22,6 +23,7 @@ func NewServer(
 
 	authHandler := handler.NewAuthHandler(userUC)
 	userHandler := handler.NewUserHandler(userUC)
+	tweetHandler := handler.NewTweetHandler(tweetUC)
 
 	api := e.Group("/api/v1")
 	auth := api.Group("/auth")
@@ -32,6 +34,9 @@ func NewServer(
 	users.GET("/me", userHandler.FindMe)
 	users.PUT("/me", userHandler.UpdateMe)
 	users.GET("/:userId", userHandler.FindByUserID)
+
+	tweet := api.Group("/tweets", apiMiddleware.NewAuthMiddleware(userUC).Authenticate)
+	tweet.POST("", tweetHandler.CreateTweet)
 
 	return e.Server
 }
