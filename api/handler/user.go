@@ -25,7 +25,7 @@ func (h *UserHandler) FindMe(c echo.Context) error {
 		return echo.NewHTTPError(http.StatusInternalServerError, "Internal server error")
 	}
 
-	res := schema.FindUserRes{
+	res := schema.User{
 		UserID: user.UserID,
 		UserName: user.UserName,
 		Email: user.Email,
@@ -57,4 +57,21 @@ func (h *UserHandler) UpdateMe(c echo.Context) error {
 	}
 
 	return c.NoContent(http.StatusOK)
+}
+
+func (h *UserHandler) FindByUserID(c echo.Context) error {
+	userID := c.Param("userId")
+	user, err := h.UserUC.FindByID(userID)
+	if err != nil {
+		return echo.NewHTTPError(http.StatusInternalServerError, "Internal server error")
+	}
+
+	res := schema.PublicUser{
+		UserID: user.UserID,
+		UserName: user.UserName,
+		Bio: user.Bio,
+		IconUrl: user.IconUrl,
+	}
+
+	return c.JSON(http.StatusOK, res)
 }

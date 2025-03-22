@@ -8,4 +8,9 @@ type User struct {
 	IconUrl string `json:"iconUrl"`
 }
 
-type FindUserRes User
+type PublicUser struct {
+	UserID       string `json:"userId"`
+	UserName string `json:"userName"`
+	Bio string `json:"bio"`
+	IconUrl string `json:"iconUrl"`
+}
