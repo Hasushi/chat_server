@@ -369,7 +369,7 @@ components:
           format: email
         bio:
           type: string
-        avatarUrl:
+        iconUrl:
           type: string
     PublicUser:
       type: object
@@ -380,7 +380,7 @@ components:
           type: string
         bio:
           type: string
-        avatarUrl:
+        iconUrl:
           type: string
     Tweet:
       type: object
