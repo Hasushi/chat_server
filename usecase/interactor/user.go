@@ -106,10 +106,10 @@ func (u *UserUsecase) Login(email string, password string) (string, error) {
 	return token, nil
 }
 
-func (u *UserUsecase) Update(args input_port.UpdateUserArgs) (entity.User, error) {
+func (u *UserUsecase) Update(args input_port.UpdateUserArgs) error {
 	user, err := u.user.FindByID(args.UserID)
 	if err != nil {
-		return entity.User{}, err
+		return err
 	}
 
 	updateArgs := output_port.UpdateUserArgs{
@@ -120,13 +120,14 @@ func (u *UserUsecase) Update(args input_port.UpdateUserArgs) (entity.User, error
 
 	err = u.user.Update(updateArgs)
 	if err != nil {
-		return entity.User{}, err
+		return err
 	}
 
-	updatedUser, err := u.user.FindByID(args.UserID)
+	// ここの処理は不要かもしれない
+	_, err = u.user.FindByID(args.UserID)
 	if err != nil {
-		return entity.User{}, err
+		return err
 	}
 
-	return updatedUser, nil
+	return nil
 }

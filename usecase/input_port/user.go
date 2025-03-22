@@ -21,5 +21,5 @@ type IUserUsecase interface {
 	FindByID(userID string) (entity.User, error)
 	Create(args CreateUserArgs) error
 	Login(email string, password string) (string, error)
-	Update(args UpdateUserArgs) (entity.User, error)
+	Update(args UpdateUserArgs) error
 }

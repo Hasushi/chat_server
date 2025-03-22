@@ -47,7 +47,7 @@ func (h *UserHandler) UpdateMe(c echo.Context) error {
 		return echo.NewHTTPError(http.StatusBadRequest, "Invalid request")
 	}
 
-	updatedUser, err := h.UserUC.Update(input_port.UpdateUserArgs{
+	err = h.UserUC.Update(input_port.UpdateUserArgs{
 		UserID: user.UserID,
 		Bio: req.Bio,
 		IconUrl: req.IconUrl,
@@ -56,13 +56,5 @@ func (h *UserHandler) UpdateMe(c echo.Context) error {
 		return echo.NewHTTPError(http.StatusInternalServerError, "Internal server error")
 	}
 
-	res := schema.FindUserRes{
-		UserID: updatedUser.UserID,
-		UserName: updatedUser.UserName,
-		Email: updatedUser.Email,
-		Bio: updatedUser.Bio,
-		IconUrl: updatedUser.IconUrl,
-	}
-
-	return c.JSON(http.StatusOK, res)
+	return c.NoContent(http.StatusOK)
 }
