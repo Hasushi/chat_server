@@ -4,7 +4,7 @@ const Bearer = "Bearer"
 
 type CreateUserReq struct {
 	Email   string  `json:"email"`
-	UserName string `json:"username"`
+	UserName string `json:"userName"`
 	Password string `json:"password"`
 }
 

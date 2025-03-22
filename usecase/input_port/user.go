@@ -12,14 +12,14 @@ type CreateUserArgs struct {
 
 type UpdateUserArgs struct {
 	UserID string
-	DisplayName string
+	Bio string
 	IconUrl string
 }
 
 type IUserUsecase interface {
 	Authenticate(token string) (string, error) 
 	FindByID(userID string) (entity.User, error)
-	Create(args CreateUserArgs) (string, entity.User, error)
-	Login(email string, password string) (string, entity.User, error)
-	Update(args UpdateUserArgs) (entity.User, error)
+	Create(args CreateUserArgs) error
+	Login(email string, password string) (string, error)
+	Update(args UpdateUserArgs) error
 }

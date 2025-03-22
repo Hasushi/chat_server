@@ -25,11 +25,11 @@ func (h *UserHandler) FindMe(c echo.Context) error {
 		return echo.NewHTTPError(http.StatusInternalServerError, "Internal server error")
 	}
 
-	res := schema.FindUserRes{
+	res := schema.User{
 		UserID: user.UserID,
 		UserName: user.UserName,
 		Email: user.Email,
-		DisplayName: user.DisplayName,
+		Bio: user.Bio,
 		IconUrl: user.IconUrl,
 	}
 
@@ -47,21 +47,30 @@ func (h *UserHandler) UpdateMe(c echo.Context) error {
 		return echo.NewHTTPError(http.StatusBadRequest, "Invalid request")
 	}
 
-	updatedUser, err := h.UserUC.Update(input_port.UpdateUserArgs{
+	err = h.UserUC.Update(input_port.UpdateUserArgs{
 		UserID: user.UserID,
-		DisplayName: req.DisplayName,
+		Bio: req.Bio,
 		IconUrl: req.IconUrl,
 	})
 	if err != nil {
 		return echo.NewHTTPError(http.StatusInternalServerError, "Internal server error")
 	}
 
-	res := schema.FindUserRes{
-		UserID: updatedUser.UserID,
-		UserName: updatedUser.UserName,
-		Email: updatedUser.Email,
-		DisplayName: updatedUser.DisplayName,
-		IconUrl: updatedUser.IconUrl,
+	return c.NoContent(http.StatusOK)
+}
+
+func (h *UserHandler) FindByUserID(c echo.Context) error {
+	userID := c.Param("userId")
+	user, err := h.UserUC.FindByID(userID)
+	if err != nil {
+		return echo.NewHTTPError(http.StatusInternalServerError, "Internal server error")
+	}
+
+	res := schema.PublicUser{
+		UserID: user.UserID,
+		UserName: user.UserName,
+		Bio: user.Bio,
+		IconUrl: user.IconUrl,
 	}
 
 	return c.JSON(http.StatusOK, res)

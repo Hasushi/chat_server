@@ -8,7 +8,7 @@ info:
 servers:
   - url: http://localhost:8080/api/v1
 paths:
-  /users:
+  /auth/register:
     post:
       summary: ユーザー登録
       description: 新規ユーザーの登録を行います。
@@ -19,7 +19,7 @@ paths:
             schema:
               type: object
               properties:
-                username:
+                userName:
                   type: string
                 email:
                   type: string
@@ -27,7 +27,7 @@ paths:
                 password:
                   type: string
               required:
-                - username
+                - userName
                 - email
                 - password
       responses:
@@ -35,76 +35,7 @@ paths:
           description: ユーザーが正常に作成されました。
         '400':
           description: リクエストエラー
-    get:
-      summary: ユーザー一覧取得（管理者向け）
-      description: ユーザーの一覧を取得します。
-      responses:
-        '200':
-          description: ユーザー一覧の取得に成功しました。
-          content:
-            application/json:
-              schema:
-                type: array
-                items:
-                  $ref: '#/components/schemas/User'
-  /users/me:
-    get:
-      summary: 自分のプロフィール取得
-      description: 認証済みのユーザーが自分のプロフィール情報を取得します。
-      responses:
-        '200':
-          description: プロフィール情報の取得に成功しました。
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/User'
-        '401':
-          description: 認証エラー
-  /users/{userId}:
-    get:
-      summary: ユーザープロフィール取得
-      description: 指定したユーザーIDのプロフィール情報を取得します。
-      parameters:
-        - name: userId
-          in: path
-          required: true
-          schema:
-            type: string
-      responses:
-        '200':
-          description: ユーザープロフィールの取得に成功しました。
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/PublicUser'
-    put:
-      summary: ユーザープロフィール更新
-      description: ユーザー自身のプロフィール情報を更新します。
-      parameters:
-        - name: userId
-          in: path
-          required: true
-          schema:
-            type: string
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              type: object
-              properties:
-                bio:
-                  type: string
-                avatarUrl:
-                  type: string
-              example:
-                bio: "Hello, I'm using our Twitter-like app."
-                avatarUrl: "http://example.com/avatar.jpg"
-      responses:
-        '200':
-          description: プロフィールが正常に更新されました。
-        '400':
-          description: リクエストエラー
+  
   /auth/login:
     post:
       summary: ログイン認証
@@ -136,6 +67,73 @@ paths:
                     type: string
         '401':
           description: 認証失敗
+  
+  /users/me:
+    get:
+      summary: ユーザー情報取得
+      description: 認証ユーザーのプロフィール情報を取得します。
+      responses:
+        '200':
+          description: ユーザー情報の取得に成功しました。
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
+    put:
+      summary: ユーザー情報更新
+      description: 認証ユーザーのプロフィール情報を更新します。
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                bio:
+                  type: string
+                avatarUrl:
+                  type: string
+              example:
+                bio: "Hello, I'm using our Twitter-like app."
+                avatarUrl: "http://example.com/avatar.jpg"
+      responses:
+        '200':
+          description: プロフィールが正常に更新されました。
+        '400':
+          description: リクエストエラー
+
+  /users/{userId}:
+    get:
+      summary: ユーザープロフィール取得
+      description: 指定したユーザーIDのプロフィール情報を取得します。
+      parameters:
+        - name: userId
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: ユーザープロフィールの取得に成功しました。
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PublicUser'
+
+  /admin/users:
+    get:
+      summary: ユーザー一覧取得（管理者向け）
+      description: ユーザーの一覧を取得します。
+      responses:
+        '200':
+          description: ユーザー一覧の取得に成功しました。
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/User'
+
   /tweets:
     post:
       summary: ツイート投稿
@@ -371,7 +369,7 @@ components:
           format: email
         bio:
           type: string
-        avatarUrl:
+        iconUrl:
           type: string
     PublicUser:
       type: object
@@ -382,7 +380,7 @@ components:
           type: string
         bio:
           type: string
-        avatarUrl:
+        iconUrl:
           type: string
     Tweet:
       type: object

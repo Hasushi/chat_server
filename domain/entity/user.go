@@ -5,6 +5,6 @@ type User struct {
 	UserName string
 	Email    string
 	HashedPassword string
-	DisplayName string
+	Bio string
 	IconUrl string
 }

@@ -31,6 +31,7 @@ func NewServer(
 	users := api.Group("/users", apiMiddleware.NewAuthMiddleware(userUC).Authenticate)
 	users.GET("/me", userHandler.FindMe)
 	users.PUT("/me", userHandler.UpdateMe)
+	users.GET("/:userId", userHandler.FindByUserID)
 
 	return e.Server
 }
