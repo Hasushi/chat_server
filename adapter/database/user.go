@@ -40,7 +40,7 @@ func findByID(db *gorm.DB, userID string) (entity.User, error) {
 }
 
 func (u *UserRepository) Create(args output_port.CreateUserArgs) error {
-	return create(u.db, args)
+	return createUser(u.db, args)
 }
 
 func (u *UserRepository) CreateWithTx(tx interface{}, args output_port.CreateUserArgs) error {
@@ -49,10 +49,10 @@ func (u *UserRepository) CreateWithTx(tx interface{}, args output_port.CreateUse
 		return output_port.ErrInvalidTransaction
 	}
 
-	return create(db, args)
+	return createUser(db, args)
 }
 
-func create(db *gorm.DB, args output_port.CreateUserArgs) error {
+func createUser(db *gorm.DB, args output_port.CreateUserArgs) error {
 	model := model.User{
 		UserID: args.UserID,
 		UserName: args.UserName,
@@ -81,7 +81,7 @@ func (u *UserRepository) FindByEmail(email string) (entity.User, error) {
 }
 
 func (u *UserRepository) Update(args output_port.UpdateUserArgs) error {
-	return update(u.db, args)
+	return updateUser(u.db, args)
 }
 
 func (u *UserRepository) UpdateWithTx(tx interface{}, args output_port.UpdateUserArgs) error {
@@ -90,11 +90,11 @@ func (u *UserRepository) UpdateWithTx(tx interface{}, args output_port.UpdateUse
 		return output_port.ErrInvalidTransaction
 	}
 
-	return update(db, args)
+	return updateUser(db, args)
 }
 
 
-func update(db *gorm.DB, args output_port.UpdateUserArgs) error {
+func updateUser(db *gorm.DB, args output_port.UpdateUserArgs) error {
 	model := model.User{
 		UserID: args.UserID,
 		Bio: args.Bio,
