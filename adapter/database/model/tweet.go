@@ -22,5 +22,6 @@ func (t Tweet) ToEntity() entity.Tweet {
 		UserID:   t.UserID,
 		Content:  t.Content,
 		ImageUrl: t.ImageUrl,
+		CreatedAt: t.CreatedAt,
 	}
 }
